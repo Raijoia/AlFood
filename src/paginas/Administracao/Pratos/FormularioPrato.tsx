@@ -3,8 +3,26 @@ import { useState, useEffect } from "react"
 import http from "../../../http"
 import ITag from "../../../interfaces/ITag"
 import IRestaurante from "../../../interfaces/IRestaurante"
+import { useParams } from "react-router-dom"
+import IPrato from "../../../interfaces/IPrato"
+import AdministracaoRestaurantes from "../Restaurantes/AdministracaoRestaurantes"
 
 const FormularioPrato = () => {
+
+  const parametros = useParams()
+
+  useEffect(() => {
+    if(parametros.id) {
+      http.get<IPrato>(`pratos/${parametros.id}/`)
+        .then(resposta => {
+          console.log(resposta.data)
+          setNomePrato(resposta.data.nome)
+          setDescricao(resposta.data.descricao)
+          setTag(resposta.data.tag)
+        })
+    }
+  }, [parametros])
+
   const [nomePrato, setNomePrato] = useState('')
   const [descricao, setDescricao] = useState('')
   const [imagem, setImagem] = useState<File | null>(null)
@@ -34,34 +52,47 @@ const FormularioPrato = () => {
   const aoSubmeterForm = (evento: React.FormEvent<HTMLFormElement>) => {
     evento.preventDefault()
 
-    const formData = new FormData();
-    formData.append('nome', nomePrato)
-    formData.append('tag', tag)
-    formData.append('descricao', descricao)
-    formData.append('restaurante', restaurante)
-
-    if(imagem) {
-      formData.append('imagem', imagem)
+    if (parametros.id) {
+      http.put(`pratos/${parametros.id}/`, {
+        nome: nomePrato,
+        tag: tag,
+        descricao: descricao,
+        restaurante: restaurante
+      })
+        .then(() => {
+          alert("Restaurante atualizado com sucesso")
+        })
+    } else {
+      const formData = new FormData();
+      formData.append('nome', nomePrato)
+      formData.append('tag', tag)
+      formData.append('descricao', descricao)
+      formData.append('restaurante', restaurante)
+  
+      if(imagem) {
+        formData.append('imagem', imagem)
+      }
+  
+      http.request({
+        url: 'pratos/',
+        method: 'POST',
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        },
+        data: formData
+      })
+        .then(() => {
+          setDescricao('')
+          setNomePrato('')
+          setTag('')
+          setRestaurante('')
+          setImagem(null)
+  
+          alert('Prato cadastrado com sucesso!')
+        })
+        .catch(erro => console.log(erro))
     }
 
-    http.request({
-      url: 'pratos/',
-      method: 'POST',
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      },
-      data: formData
-    })
-      .then(() => {
-        setDescricao('')
-        setNomePrato('')
-        setTag('')
-        setRestaurante('')
-        setImagem(null)
-        
-        alert('Prato cadastrado com sucesso!')
-      })
-      .catch(erro => console.log(erro))
   }
 
   return (
