@@ -4,7 +4,7 @@ import style from './ListaRestaurantes.module.scss';
 import Restaurante from './Restaurante';
 import axios, { AxiosRequestConfig } from 'axios';
 import { IPaginacao } from '../../interfaces/IPaginacao';
-import { Button, TextField } from '@mui/material';
+import { Button, InputLabel, MenuItem, Select } from '@mui/material';
 
 interface IParametrosBusca {
   ordering?: string
@@ -54,12 +54,22 @@ const ListaRestaurantes = () => {
     <section className={style.ListaRestaurantes}>
       <form onSubmit={pesquisar}>
         <h2>Pesquise pelo seu restaurante</h2>
-        <TextField 
+        <InputLabel id="demo-simple-select-label">Restaurante</InputLabel>
+        <Select
+        labelId="demo-simple-select-label"
+        id="demo-simple-select"
+        value={pesquisa}
+        label="Restaurante"
+        onChange={evento => setPesquisa(evento.target.value)}
+        >
+          {restaurantes.map(restaurante => <MenuItem value={restaurante.nome}>{restaurante.nome}</MenuItem>)}
+        </Select>
+        {/* <TextField 
           value={pesquisa} 
           onChange={evento => setPesquisa(evento.target.value)} 
           label="Pesquisar" 
           variant="outlined" 
-        />
+        /> */}
         <Button type='submit' variant="contained">Pesquisar</Button>
       </form>
       <h1>Os restaurantes mais <em>bacanas</em>!</h1>
