@@ -5,7 +5,6 @@ import ITag from "../../../interfaces/ITag"
 import IRestaurante from "../../../interfaces/IRestaurante"
 import { useParams } from "react-router-dom"
 import IPrato from "../../../interfaces/IPrato"
-import AdministracaoRestaurantes from "../Restaurantes/AdministracaoRestaurantes"
 
 const FormularioPrato = () => {
 
